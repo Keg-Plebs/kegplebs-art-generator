@@ -29,25 +29,25 @@ const createBatch = async() => {
 
         const matchedLayers = obtainLayersFromDna(uniqueDna, layers);  // grab layers needed to draw image
         
-        // const loadedLayers = matchedLayers.map(layerElement => {
-        //     return loadLayerImage(layerElement);
-        // });
+        const loadedLayers = matchedLayers.map(layerElement => {
+            return loadLayerImage(layerElement);
+        });
 
-        // await Promise.all(loadedLayers).then(response => {
+        await Promise.all(loadedLayers).then(response => {
 
-        //     drawBase();
+            drawBase();
 
-        //     const elements = response.map(element => {
-        //         drawLayer(element);
-        //         return element.name;
-        //     })
+            const elements = response.map(element => {
+                drawLayer(element);
+                return element.name;
+            })
 
-        //     saveImage(curr);
-        //     individualMetadata.push(addMetaData(uniqueDna, curr, elements));
-        // })
+            saveImage(curr);
+            individualMetadata.push(addMetaData(uniqueDna, curr, elements));
+        })
 
-        // writeMetaData(individualMetadata[0]);
-        // if(curr % 100 === 0) console.log(curr);
+        writeMetaData(individualMetadata[0]);
+        if(curr % 100 === 0) console.log(curr);
     }
     
     writeJsonData(getTraitCount(batchSize), 'traitCount');
