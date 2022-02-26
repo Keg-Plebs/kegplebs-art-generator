@@ -18,9 +18,6 @@ const drawBase = async () => {
 }
 
 const drawLayer = async (_element) => {
-
-    if(_element.layer === 'MOUTHS') console.log(_element.path);
-    
     if(_element.layer === 'BODY' && specials[_element.filename]) {
         return;
     } 
@@ -44,8 +41,8 @@ const writeMetaData = (_metadata) => {
 }
 
 
-const writeTraits = (traitsList) => {
-    fs.writeFileSync(`./output/json/traitsCount.json`, JSON.stringify(traitsList));
+const writeJsonData = (traitsList, name) => {
+    fs.writeFileSync(`./output/json/${name}.json`, JSON.stringify(traitsList));
 }
 
 const addMetaData = (_dna, _mint, _attributes) => {
@@ -74,5 +71,5 @@ module.exports = {
     loadLayerImage,
     writeMetaData,
     addMetaData,
-    writeTraits
+    writeJsonData
 }

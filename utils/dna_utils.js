@@ -2,13 +2,16 @@ const { specials, specialDnaSegments } = require('../input/config');
 
 const batchList = {};
 const traitCount = {};
+const countSpecialDnaSimilar = 0;
 const specialTraitDna = {};
+const traitUsageIndex = {}
+
 
 const createUniqueDna = _layers => { // return only a 'dna' that is unique
     while(true) {
         const { dna, cantUse } = createDna(_layers)
         if(!cantUse && !batchList[dna]) {
-            batchList[dna] = 1;
+            batchList[dna] = Object.keys(batchList).length + 1;
             return dna;
         }
     }
@@ -63,8 +66,11 @@ const createDna = _layers => {  // create any 'dna' regardless of uniqueness
 
                         // dont have to check the 4th segment, as we know its the same 
                         // due to the sim dna being in the list already
-                    ) cantUse = true;
-                    break;
+                    ) {
+                        cantUse = true;
+                        countSpecialDnaSimilar++;
+                        break;
+                    }
                 }
             }
             
@@ -111,21 +117,10 @@ const obtainLayersFromDna = (_dna, _layers) => {
             })
         }
 
+        if(traitUsageIndex[element.filename]) traitUsageIndex[element.filename].push(batchList[_dna])
+        else traitUsageIndex[element.filename] = [batchList[_dna]];
     }
     
-    //  _layers.map((layer, index) => {
-    //     const element = Object.values(layer.elements)[_dna[index]];
-        
-    //     if(traitCount[element.filename]) traitCount[element.filename]++;
-    //     else traitCount[element.filename] = 1;
-
-    //     return {
-    //         position: layer.position,
-    //         size: layer.size,
-    //         ...element
-    //     }
-    // })
-
     if(isSpecial) {
         layerData[0] = {
             ...layerData[0],
@@ -137,17 +132,37 @@ const obtainLayersFromDna = (_dna, _layers) => {
 }
 
 const getTraitCount = (batchSize) => {
-    const traitRatios = {};
+    const outputJson = {};
+
     Object.entries(traitCount).forEach(([key, value]) => {
-        traitRatios[key] = [value, (value / batchSize)];
+        outputJson[key] = [value, (value / batchSize)];
     });
 
+    return outputJson;
+}
 
-    return traitRatios;
+const getTraitUsageIndexes = () => {
+    const outputJson = {};
+
+    Object.entries(traitUsageIndex).forEach(([key, value]) => {
+        outputJson[key] = value;
+    })
+
+    return outputJson;
+}
+
+const getSimilarDnaResetCount = () => {
+    const outputJson = {};
+
+    outputJson['countSpecialDnaSimilar'] = countSpecialDnaSimilar;
+
+    return outputJson;
 }
 
 module.exports = {
     createUniqueDna,
     obtainLayersFromDna,
-    getTraitCount
+    getTraitCount,
+    getTraitUsageIndexes,
+    getSimilarDnaResetCount
 }

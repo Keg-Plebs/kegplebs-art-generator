@@ -2,12 +2,18 @@ const Stopwatch = require('timer-stopwatch');
 const stopwatch = new Stopwatch();
 
 const { init } = require("./utils/config_utils");
-const { createUniqueDna, obtainLayersFromDna, getTraitCount } = require("./utils/dna_utils");
+const { 
+    createUniqueDna, 
+    obtainLayersFromDna, 
+    getTraitCount,
+    getTraitUsageIndexes,
+    getSimilarDnaResetCount
+} = require("./utils/dna_utils");
 const { 
     saveImage, addMetaData, 
     writeMetaData, drawBase, 
     drawLayer, loadLayerImage,
-    writeTraits 
+    writeJsonData
 } = require("./utils/index-utils");
 
 const myArgs                        = process.argv.slice(2);
@@ -23,28 +29,31 @@ const createBatch = async() => {
 
         const matchedLayers = obtainLayersFromDna(uniqueDna, layers);  // grab layers needed to draw image
         
-        const loadedLayers = matchedLayers.map(layerElement => {
-            return loadLayerImage(layerElement);
-        });
+        // const loadedLayers = matchedLayers.map(layerElement => {
+        //     return loadLayerImage(layerElement);
+        // });
 
-        await Promise.all(loadedLayers).then(response => {
+        // await Promise.all(loadedLayers).then(response => {
 
-            drawBase();
+        //     drawBase();
 
-            const elements = response.map(element => {
-                drawLayer(element);
-                return element.name;
-            })
+        //     const elements = response.map(element => {
+        //         drawLayer(element);
+        //         return element.name;
+        //     })
 
-            saveImage(curr);
-            individualMetadata.push(addMetaData(uniqueDna, curr, elements));
-        })
+        //     saveImage(curr);
+        //     individualMetadata.push(addMetaData(uniqueDna, curr, elements));
+        // })
 
-        writeMetaData(individualMetadata[0]);
-        if(curr % 100 === 0) console.log(curr);
+        // writeMetaData(individualMetadata[0]);
+        // if(curr % 100 === 0) console.log(curr);
     }
     
-    writeTraits(getTraitCount(batchSize));
+    writeJsonData(getTraitCount(batchSize), 'traitCount');
+    writeJsonData(getTraitUsageIndexes(), 'traitUsageIndexes');
+    writeJsonData(getSimilarDnaResetCount(), 'similarDnaResetCount');
+
     stopwatch.stop();
     console.log((stopwatch.ms / 1000) / 60);
 }
